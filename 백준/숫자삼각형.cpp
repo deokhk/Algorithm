@@ -1,8 +1,9 @@
 #include <iostream>
 using namespace std;
-int tri[503][503];
-int maxt[503][503];
-int calmax(int i, int j);
+int tri[501][501];
+int max[501];
+int pos[501];
+int calmax(int rown);
 int main()
 {
 	int n;
@@ -14,51 +15,32 @@ int main()
 			cin >> tri[i][j];
 		}
 	}
-	maxt[1][0] = tri[0][0];
-	int temp=calmax(n,0);
-	for (int i = 0; i < n-1; i++)
-	{
-		if (calmax(n,i) <= calmax(n,i+1))
-		{
-			temp=maxt[n][i + 1];
-		}
-	}
-	cout << temp << endl;
-	return 0;
+	max[1] = tri[0][0];
+	pos[1] = 0;//tri배열에서의 j pos를 의미
+	int max = calmax(n);
+	cout << max << endl;
 
 }
-int calmax(int i, int j)//특정 줄까지의 max를 계산(i번째 줄 j번째 원소의..)
+int calmax(int rown)//특정 줄까지의 max를 계산
 {
-	if (maxt[i][j] > 0)//줄까지 계산된 경우
+	if (max[rown] > 0)//줄까지 계산된 경우
 	{
-		return maxt[i][j];
+		return max[rown];
 	}
 	else
 	{
-		if (j == 0 )//첫 원소
+		int templ = calmax(rown - 1) + tri[rown - 2][pos[rown - 1]];
+		int tempr = calmax(rown - 1) + tri[rown - 2][pos[rown - 1] + 1];
+		if (templ > tempr)
 		{
-			maxt[i][0] = calmax(i-1,0) + tri[i - 1][0];
-			return maxt[i][j];
+			max[rown] = templ;
+			pos[rown] = pos[rown - 1];
 		}
-		else if (j == i - 1)//마지막 원소
+		else
 		{
-			maxt[i][j] = calmax(i - 1, j - 1) + tri[i - 1][j];
-			return maxt[i][j];
+			max[rown] = tempr;
+			pos[rown] = pos[rown - 1]+1;
 		}
-		else //중간원소
-		{
-			int templ = calmax(i-1,j-1) + tri[i-1][j];
-			int tempr = calmax(i-1,j) + tri[i-1][j];
-			if (templ > tempr)
-			{
-				maxt[i][j] = templ;
-			}
-			else
-			{
-				maxt[i][j] = tempr;
-			}
-			return maxt[i][j];
-		}
-		
+		return max[rown];
 	}
 }
