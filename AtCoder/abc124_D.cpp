@@ -49,36 +49,89 @@ int main()
 		}
 	}
 	int mssize=massset.size();
-	int consec=0;
-	vector<int> cmpv;
-	for(int i=0; i<2*K; i++)
+	int mininum=0;
+	for(int i=0; i<mssize; i++)
 	{
-		if(i<mssize)
+		if(massset[i]<0)
 		{
-			consec+=abs(massset[i]);
+			mininum++;
 		}
 	}
-	cmpv.push_back(-1*consec);
-	if(mssize<2*K)
+	vector<int> subconsum;
+	int nextstart=0;
+	int firstsum=0;
+	int last=0;
+	bool isfastpossible=false;
+	int numofm=0;
+    for(int i=0; i<mssize; i++)
+    {
+      if(massset[i]<0)
+      {
+        numofm++;
+      }
+    }
+	//calculate subconsum 0
+	if(numofm<=K)
 	{
-		
+		cout<<N<<endl;
 	}
 	else
 	{
-		
-	}
-	for(int i=1; i<mssize-K; i++)
+		int fc=0;
+	for(int i=0; i<mssize; i++)
 	{
-		if(i+2*K-1>=mssize-K)
+		firstsum+=abs(massset[i]);
+		if(fc==1 && massset[i]>0)
 		{
-			consec=consec+(abs(massset[mssize-K-1])-abs(massset[i-1]));
+			nextstart=i;
 		}
-		else
+		if(massset[i]<0)
 		{
-			consec=consec+(abs(massset[i+2*K-1])-abs(massset[i-1]));
+			fc++;
 		}
-		cmpv.push_back(-1*consec);
+		if(fc==K && massset[i]>0)
+		{
+			last=i;
+			break;
+		}
 	}
-	sort(cmpv.begin(),cmpv.end());
-	cout<<-1*cmpv[0]<<endl;
+	subconsum.push_back(firstsum);
+	int checker=0;
+	while(subconsum.size()<mininum-K+1)
+	{
+		int newsum=subconsum.back();
+		int mcount=0;
+		for(int j=nextstart-1; j>=0; j--)
+		{
+			newsum-=abs(massset[j]);
+			if(massset[j]<0)
+			{
+				mcount++;
+			}
+			if(mcount==1 && massset[j]>0)
+			{
+				break;
+			}
+		}
+		mcount=0;
+		nextstart+=2;
+		for(int j=last+1; j<mssize; j++)
+		{
+			newsum+=abs(massset[j]);
+			if(massset[j]<0)
+			{
+				mcount++;
+			}
+			if(mcount==1 && massset[j]>0)
+			{
+				last=j;
+				break;
+			}
+		}
+		subconsum.push_back(newsum);
+	}
+	
+	sort(subconsum.begin(),subconsum.end());
+	cout<<subconsum.back()<<endl;
+	}
 }
